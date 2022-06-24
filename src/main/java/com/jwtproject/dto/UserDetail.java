@@ -16,6 +16,10 @@ public class UserDetail implements UserDetails {
 
     private User user;
 
+    public UserDetail(User user) {
+        this.user = user;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getRoles().stream()
