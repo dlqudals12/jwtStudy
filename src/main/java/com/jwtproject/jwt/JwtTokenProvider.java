@@ -2,10 +2,7 @@ package com.jwtproject.jwt;
 
 
 import com.jwtproject.dto.UserResponseDto;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -91,6 +88,23 @@ public class JwtTokenProvider {
         //UserDetails 객체를 만들어서 Authentication 리턴
         UserDetails principal = new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    // 토큰 정보를 검증하는 메서드
+    public Boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("Invalid JWT Token", e);
+        } catch (ExpiredJwtException e) {
+            log.info("Expired JWT Token", e);
+        } catch (UnsupportedJwtException e) {
+            log.info("UnsupportedJWTException", e);
+        } catch (IllegalStateException e) {
+            log.info("JWT claims string is empty.", e);
+        }
+        return false;
     }
 
     //복호화 메서드
